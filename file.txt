@@ -1,0 +1,4 @@
+html/mobile/dist/income.html
+html/mobile/dist/myProps/buy.html
+html/mobile/dist/myProps/history.html
+html/mobile/dist/myProps/index.html
