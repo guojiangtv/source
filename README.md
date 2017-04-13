@@ -160,8 +160,8 @@ html目录：存放html静态文件，写代码时我们只关心html内的src�
 
 *	更新到中转机
 	到CRT中更新。跟以前一样。
-	root@debian:/var/www/videochat/tools/send_shell# ./codeProxyUpdate.sh videochat
-	root@debian:/var/www/videochat/tools/send_shell# ./codeProxyUpdate.sh static_guojiang_tv
+		root@debian:/var/www/videochat/tools/send_shell# ./codeProxyUpdate.sh videochat
+		root@debian:/var/www/videochat/tools/send_shell# ./codeProxyUpdate.sh static_guojiang_tv
 
 *	发布
 	访问https://admin.guojiang.tv 发布
