@@ -91,7 +91,7 @@ module.exports = {
 	},
 	plugins: [
 		new BrowserSyncPlugin({
-			host: 'localhost',
+			host: ['m.guojiang.tv','m.tuho.tv'],
 			port: 3000,
 			server: { baseDir: [browserSyncBaseDir] }
 		}),
