@@ -29,7 +29,6 @@ var entries = getEntry(entryDir)
 entries.vendors = ['vue','axios','common']
 
 console.log(entries)
-console.log('__dirname:'+__dirname)
 
 module.exports = {
     /* 输入文件 */
@@ -119,24 +118,19 @@ module.exports = {
 
 
 /***** 生成组合后的html *****/
-/*
-*	命名支持：module-page.ejs ，
-*	例如：
-*	我的道具模块 购买道具页面:
-*		模板ejs: myProps/myProps-buy.ejs 
-*		模板js： myProps/buy.js
-*		页面js： myProps/myProps-buy.js
-* 	
-*/
+
 var pages = getEntry(basePageEntry + 'src/**/*.ejs')
 for (var pathname in pages) {
 	var pathArr = pathname.split('-')
-	var new_dir = pathArr[1] ? pathArr[0] +'/' + pathArr[1] : pathname
-	pathArr[1] = pathArr[1] ? pathArr[1] : pathArr[0]
+
+	var new_dir = ''
+	pathArr.forEach(function(val){
+		new_dir += '/' + val
+	})
 
 	var conf = {
-		filename: path.resolve(__dirname, basePageEntry + 'dist/' + new_dir + '.html'), // html文件输出路径
-		template: path.resolve(__dirname, basePageEntry + 'src/'+ pathArr[0] +'/' + pathArr[1] + '.js'),
+		filename: path.resolve(__dirname, basePageEntry + 'dist' + new_dir + '.html'), // html文件输出路径
+		template: path.resolve(__dirname, basePageEntry + 'src'+ new_dir + '.js'),
 		inject: true, 
 		cache: true, //只改动变动的文件
 		minify: {
@@ -154,15 +148,23 @@ for (var pathname in pages) {
 
 
 
-/***** 获取文件列表：输出正确的js和html路径 *****/
+/***** 获取文件列表(仅支持js和ejs文件)：输出正确的js和html路径 *****/
 
 function getEntry(globPath) {
 	var entries = {}, basename
 
 	glob.sync(globPath).forEach(function (entry) {
-    //排出layouts内的公共文件
-		if(entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1){
-			basename = path.basename(entry, path.extname(entry))
+
+    	//排出layouts内的公共文件
+		if(entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('component') == -1){
+
+			//判断是js文件还是ejs模板文件
+			let isJsFile = entry.indexOf('.js') !== -1
+			let dirArr = isJsFile ? 
+						entry.split('/js/')[1].split('.js')[0].split('/') :
+						entry.split('html/mobile/src/')[1].split('.ejs')[0].split('/')
+			
+			basename = dirArr.join('-')
 			entries[basename] = entry
 		}
 	})
@@ -175,7 +177,7 @@ function getEntry(globPath) {
 /***** 区分开发环境和生产环境 *****/
 
 if (prod) {
-	console.log('production')
+	console.log('当前编译环境：production')
 
 	//module.exports.devtool = 'source-map'
 	module.exports.plugins = module.exports.plugins.concat([
@@ -195,7 +197,7 @@ if (prod) {
 		})
 	])
 } else {  
-	console.log('dev')
+	console.log('当前编译环境：dev')
 
 	module.exports.devtool = 'cheap-module-source-map'
 }
