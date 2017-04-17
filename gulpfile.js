@@ -21,7 +21,39 @@ gulp.task('webpack', function(callback) {
 /***************** 移动待发布文件到trunk ***********************/
 
 var file = './file.txt'
-gulp.task('move', function() {
+gulp.task('copybeta', function() {
+	fs.readFile(file, function(err, obj){
+		//console.log('err:', err)
+		obj = obj.toString().split('\n')
+
+		for(var i = 0; i< obj.length; i++){
+
+			var srcFile = obj[i].replace('\r','')
+            
+			if(srcFile.indexOf('.') == -1){
+				srcFile = srcFile + '/**/*.*'
+			}
+			console.log('dir:', srcFile)
+
+			if(srcFile.indexOf('static_guojiang_tv') != -1){
+				gulp.src(srcFile, {base: './static_guojiang_tv'})    
+                    .pipe(debug({title: 'static:'}))
+                    .pipe(gulp.dest( fs.realpathSync('./beta/static') ))
+			}else{
+				gulp.src(srcFile, {base: './html'})    
+                    .pipe(debug({title: 'videochat:'}))
+                    .pipe(gulp.dest( fs.realpathSync('./beta/videochat/web/html') ))
+			}
+            
+		}
+        
+	})  
+
+
+})
+
+
+gulp.task('copytrunk', function() {
 	fs.readFile(file, function(err, obj){
 		//console.log('err:', err)
 		obj = obj.toString().split('\n')
