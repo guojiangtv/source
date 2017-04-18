@@ -75,7 +75,16 @@ module.exports = {
 			},
 			{
 				test: /\.(png|jpg|gif)$/,
-				loader: 'url-loader?limit=5120&name=img/[name].[ext]?v=[hash:8]'
+				loader: 'url-loader',
+				options: {
+					limit: 512,
+					name: function(p){
+						let tem_path = p.split(/\\img\\/)[1]
+						tem_path = tem_path.replace(/\\/g,'/')
+
+						return 'img/'+tem_path + '?v=[hash:8]'
+					}
+				}
 			},
 			{
 				test: /\.html$/,
@@ -140,7 +149,9 @@ for (var pathname in pages) {
 	}
 	if (pathname in module.exports.entry) {
 		conf.chunks = [pathname, 'vendors', 'manifest']
-	}
+	}else{
+		conf.chunks = []
+	}	
 
 	module.exports.plugins.push(new htmlWebpackPlugin(conf))
 }
