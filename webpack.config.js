@@ -26,7 +26,7 @@ var browserSyncBaseDir = './html/mobile/dist'
 
 //入口js文件配置以及公共模块配置
 var entries = getEntry(entryDir) 
-entries.vendors = ['vue','axios','common']
+entries.vendors = ['vue','axios','common','wxShare']
 
 console.log(entries)
 
@@ -150,7 +150,7 @@ for (var pathname in pages) {
 	if (pathname in module.exports.entry) {
 		conf.chunks = [pathname, 'vendors', 'manifest']
 	}else{
-		conf.chunks = []
+		conf.chunks = ['vendors', 'manifest']
 	}	
 
 	module.exports.plugins.push(new htmlWebpackPlugin(conf))

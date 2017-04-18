@@ -46,7 +46,8 @@
     "vue-template-compiler": "^2.2.5",
     "webpack": "^2.3.2",
     "webpack-dev-server": "^2.4.2",
-    "webpack-zepto": "^0.0.1"
+    "webpack-zepto": "^0.0.1",
+    "weixin-js-sdk": "^1.2.0"
   },
   "dependencies": {},
   "browserslist": [
