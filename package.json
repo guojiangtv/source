@@ -6,8 +6,9 @@
   "scripts": {
     "watch": "webpack --watch",
     "build": "webpack",
-    "deploy": "set NODE_ENV=production&&webpack --progress --colors",
-    "browser": "browser-sync start --server --files '**/*.*'"
+    "deploy": "set NODE_ENV=production&&webpack --progress --colors --hide-modules",
+    "browser": "browser-sync start --server --files '**/*.*'",
+    "dll": "set NODE_ENV=production&&webpack --progress --colors --config ./webpack-dll.config.js"
   },
   "keywords": [],
   "author": "smy",
@@ -43,6 +44,7 @@
     "url-loader": "^0.5.8",
     "vue": "^2.2.6",
     "vue-loader": "^11.3.3",
+    "vue-router": "^2.5.3",
     "vue-template-compiler": "^2.2.5",
     "webpack": "^2.3.2",
     "webpack-dev-server": "^2.4.2",
