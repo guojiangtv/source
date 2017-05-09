@@ -6,6 +6,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin') //抽离css
 var htmlWebpackPlugin = require('html-webpack-plugin')
 var BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 //生产与开发环境配置
 var glob = require('glob')
@@ -23,6 +24,12 @@ var outDir = path.resolve(__dirname, './static_guojiang_tv/mobile/v2')
 var outPublicDir = 'http://static.guojiang.tv/mobile/v2/'
 var basePageEntry = './html/mobile/'
 var browserSyncBaseDir = './html/mobile/dist'
+//clean folder
+var cleanFolder = [
+					path.resolve(__dirname, './html/mobile/dist'), 
+					path.resolve(__dirname, './static_guojiang_tv/mobile/v2/css'), 
+					path.resolve(__dirname, './static_guojiang_tv/mobile/v2/js')
+				]
 
 //入口js文件配置以及公共模块配置
 var entries = getEntry(entryDir) 
@@ -101,6 +108,7 @@ module.exports = {
 		]
 	},
 	plugins: [
+		new webpack.HashedModuleIdsPlugin(),
 		new webpack.DllReferencePlugin({
 		  context: __dirname, // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
 		  manifest: require('./manifest.json'), // 指定manifest.json
@@ -127,7 +135,10 @@ module.exports = {
       		//filename: 'js/vendors-[hash:6].js', // 公共模块的名称
 			chunks: 'vendors',  // chunks是需要提取的模块
 			minChunks: Infinity  //公共模块最小被引用的次数
-		})
+		}),
+		new CopyWebpackPlugin([
+            { from: baseEntryDir + 'js/lib', to: 'js/lib' },
+        ])
 	]
 }
 
@@ -194,7 +205,7 @@ if (prod) {
 
 	//module.exports.devtool = 'module-cheap-source-map'
 	module.exports.plugins = module.exports.plugins.concat([
-		//new CleanWebpackPlugin(['dist']),
+		new CleanWebpackPlugin( cleanFolder ),
     	//压缩css代码
 		new OptimizeCssAssetsPlugin({
 			assetNameRegExp: /\.css\.*(?!.*map)/g,  //注意不要写成 /\.css$/g

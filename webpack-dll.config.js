@@ -15,7 +15,7 @@ var resolveConfigDir = './webpack-config/resolve.config.js'
 //目录配置
 var baseEntryDir = './static_guojiang_tv/src/mobile/v2/'
 var entryDir = baseEntryDir + '**/*.js'
-var outDir = path.resolve(__dirname, './static_guojiang_tv/mobile/v2')
+var outDir = path.resolve(__dirname, './static_guojiang_tv/src/mobile/v2')
 var outPublicDir = 'http://static.guojiang.tv/mobile/v2/'
 
 module.exports = {
@@ -27,7 +27,7 @@ module.exports = {
 	output: {
 		path: outDir,
 		publicPath: outPublicDir,
-		filename: 'js/[name].js?v=[chunkhash:8]',
+		filename: 'js/lib/[name].js?v=[chunkhash:8]',
 		library: '[name]_library'
 	},
 	module: {
