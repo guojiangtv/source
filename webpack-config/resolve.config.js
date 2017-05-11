@@ -7,10 +7,11 @@ module.exports = {
 		'vue': path.resolve(__dirname, baseEntryDir + 'js/lib/vue.min.js'),
 		'axios': path.resolve(__dirname, baseEntryDir + 'js/lib/axios.min.js'),
 		'layer': path.resolve(__dirname, baseEntryDir + 'js/lib/layer.js'),
+		'rsa': path.resolve(__dirname, baseEntryDir + 'js/lib/rsa.js'),
 		'common': path.resolve(__dirname, baseEntryDir + 'js/common/common.js'),
-		'wxShare': path.resolve(__dirname, baseEntryDir + 'js/common/wxShare.js')
+		'wxShare': path.resolve(__dirname, baseEntryDir + 'js/common/wxShare.js'),
 	},
 
   // 当require的模块找不到时，尝试添加这些后缀后进行寻找
-	extensions: ['.js', '.css', '.less', '.vue'],
+	extensions: ['.js', '.css', '.less', '.vue', '.json'],
 }
