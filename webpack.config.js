@@ -6,7 +6,9 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin') //抽离css
 var htmlWebpackPlugin = require('html-webpack-plugin')
 var BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-var CopyWebpackPlugin = require('copy-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin')
+
+var HashedChunkIdsPlugin = require('./webpack-config/hashedChunkIdsPlugin.js')
 
 //生产与开发环境配置
 var glob = require('glob')
@@ -108,6 +110,7 @@ module.exports = {
 		]
 	},
 	plugins: [
+		new HashedChunkIdsPlugin(),
 		new webpack.HashedModuleIdsPlugin(),
 		new webpack.DllReferencePlugin({
 		  context: __dirname, // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
@@ -161,9 +164,9 @@ for (var pathname in pages) {
 		}
 	}
 	if (pathname in module.exports.entry) {
-		conf.chunks = [pathname, 'vendors', 'manifest']
+		conf.chunks = [pathname, 'vendors']
 	}else{
-		conf.chunks = ['vendors', 'manifest']
+		conf.chunks = ['vendors']
 	}	
 
 	module.exports.plugins.push(new htmlWebpackPlugin(conf))

@@ -4,6 +4,8 @@ var webpack = require('webpack')
 var ExtractTextPlugin = require('extract-text-webpack-plugin') //抽离css
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
+var HashedChunkIdsPlugin = require('./webpack-config/hashedChunkIdsPlugin.js')
+
 //生产与开发环境配置
 var glob = require('glob')
 var prod = process.env.NODE_ENV === 'production' ? true : false //是否是生产环境
@@ -92,6 +94,7 @@ module.exports = {
 		]
 	},
 	plugins: [
+		new HashedChunkIdsPlugin(),
 		new webpack.HashedModuleIdsPlugin(),
 		new webpack.DllPlugin({
 	      path: 'manifest.json', // 本Dll文件中各模块的索引，供DllReferencePlugin读取使用
