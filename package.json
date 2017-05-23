@@ -5,7 +5,7 @@
   "main": "webpack.config.js",
   "scripts": {
     "watch": "webpack --watch",
-    "build": "webpack",
+    "build": "webpack --hide-modules",
     "deploy": "set NODE_ENV=production&&webpack --progress --colors --hide-modules",
     "browser": "browser-sync start --server --files '**/*.*'",
     "dll": "set NODE_ENV=production&&webpack --progress --colors --config ./webpack-dll.config.js"
@@ -25,6 +25,7 @@
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.27.3",
     "ejs-loader": "^0.3.0",
+    "es6-promise": "^4.1.0",
     "eslint": "^3.18.0",
     "eslint-loader": "^1.7.0",
     "extract-text-webpack-plugin": "^2.1.0",
