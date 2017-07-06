@@ -89,7 +89,7 @@ module.exports = {
 				test: /\.(png|jpg|gif)$/,
 				loader: 'url-loader',
 				options: {
-					limit: 512,
+					limit: 5120,
 					name: function(p){
 						let tem_path = p.split(/\\img\\/)[1]
 						tem_path = tem_path.replace(/\\/g,'/')
