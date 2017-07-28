@@ -213,7 +213,11 @@ if (prod) {
 		new OptimizeCssAssetsPlugin({
 			assetNameRegExp: /\.css\.*(?!.*map)/g,  //注意不要写成 /\.css$/g
 			cssProcessor: require('cssnano'),
-			cssProcessorOptions: { discardComments: {removeAll: true } },
+			cssProcessorOptions: { 
+				discardComments: {removeAll: true },
+				// 避免 cssnano 重新计算 z-index
+ 				safe: true
+			},
 			canPrint: true
 		}),
  		//压缩JS代码
