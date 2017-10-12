@@ -8,7 +8,8 @@
     "build": "webpack --hide-modules",
     "deploy": "set NODE_ENV=production&&webpack --progress --colors --hide-modules",
     "browser": "browser-sync start --server --files '**/*.*'",
-    "dll": "set NODE_ENV=production&&webpack --progress --colors --config ./webpack-dll.config.js"
+    "dll": "set NODE_ENV=production&&webpack --progress --colors --config ./webpack-dll.config.js",
+    "dll-dev": "webpack --progress --colors --config ./webpack-dll.config.js"
   },
   "keywords": [],
   "author": "smy",
@@ -54,7 +55,9 @@
     "webpack-zepto": "^0.0.1",
     "weixin-js-sdk": "^1.2.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "babel-polyfill": "^6.23.0"
+  },
   "browserslist": [
     "> 0.2%",
     "last 5 versions",
