@@ -21,8 +21,7 @@ module.exports = {
             "single"
         ],
         "semi": [
-            "error",
-            "never"
+             2, "always"
         ],
         "no-console": [
             "off"
