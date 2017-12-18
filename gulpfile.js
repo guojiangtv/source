@@ -26,6 +26,11 @@ gulp.task('copybeta', function() {
 		//console.log('err:', err)
 		obj = obj.toString().replace(/\s{2,}/g, '\n').replace(/(^\s+)|(\s+$)/g, '').split('\n')
 
+		if(obj == ''){
+			console.log('空文件');
+			return;
+		} 
+
 		for(var i = 0; i< obj.length; i++){
 
 			var srcFile = obj[i].replace(/\s+/g,'')
@@ -40,6 +45,8 @@ gulp.task('copybeta', function() {
                     .pipe(debug({title: 'static:'}))
                     .pipe(gulp.dest( fs.realpathSync('./beta/static') ))
 			}else{
+				srcFile = srcFile.replace('videochat/web/','')
+
 				gulp.src(srcFile, {base: './html'})    
                     .pipe(debug({title: 'videochat:'}))
                     .pipe(gulp.dest( fs.realpathSync('./beta/videochat/web/html') ))
@@ -58,6 +65,8 @@ gulp.task('copytrunk', function() {
 		//console.log('err:', err)
 		obj = obj.toString().replace(/\s{2,}/g, '\n').replace(/(^\s+)|(\s+$)/g, '').split('\n')
 
+		if(obj == '') return
+
 		for(var i = 0; i< obj.length; i++){
 
 			var srcFile = obj[i].replace(/\s+/g,'')
@@ -65,7 +74,10 @@ gulp.task('copytrunk', function() {
 			if(srcFile.indexOf('.') == -1){
 				srcFile = srcFile + '/**/*.*'
 			}
-			console.log('dir:', srcFile)
+			if(obj == ''){
+				console.log('空文件');
+				return;
+			} 
 
 			if(srcFile.indexOf('maps') != -1) continue
 
@@ -74,6 +86,7 @@ gulp.task('copytrunk', function() {
                     .pipe(debug({title: 'static:'}))
                     .pipe(gulp.dest( fs.realpathSync('./trunk/static') ))
 			}else{
+				srcFile = srcFile.replace('videochat/web/','')
 				gulp.src(srcFile, {base: './html'})    
                     .pipe(debug({title: 'videochat:'}))
                     .pipe(gulp.dest( fs.realpathSync('./trunk/videochat/web/html') ))

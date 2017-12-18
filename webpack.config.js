@@ -1,43 +1,75 @@
 // 引入操作路径模块和webpack 
-var path = require('path')
-var webpack = require('webpack')
-var CleanWebpackPlugin = require('clean-webpack-plugin')
-var ExtractTextPlugin = require('extract-text-webpack-plugin') //抽离css
-var htmlWebpackPlugin = require('html-webpack-plugin')
-var BrowserSyncPlugin = require('browser-sync-webpack-plugin')
-var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-var CopyWebpackPlugin = require('copy-webpack-plugin')
+var path = require('path');
+var webpack = require('webpack');
+var CleanWebpackPlugin = require('clean-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin'); //抽离css
+var htmlWebpackPlugin = require('html-webpack-plugin');
+var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
-var HashedChunkIdsPlugin = require('./webpack-config/hashedChunkIdsPlugin.js')
+var HashedChunkIdsPlugin = require('./webpack-config/hashedChunkIdsPlugin.js');
 
 //生产与开发环境配置
-var glob = require('glob')
-var prod = process.env.NODE_ENV === 'production' ? true : false //是否是生产环境
+var glob = require('glob');
+var prod = process.env.NODE_ENV === 'production' ? true : false; //是否是生产环境
+var isPc = process.env.PLATFORM == 'pc' ? true : false; //是否是pc编译
 
 //webpack配置
-var eslintConfigDir = prod ? './webpack-config/.eslintrc.js' : './webpack-config/.eslintrc.dev.js'
-var postcssConfigDir = './webpack-config/postcss.config.js'
-var resolveConfigDir = './webpack-config/resolve.config.js'
+var eslintConfigDir = prod ? './webpack-config/.eslintrc.js' : './webpack-config/.eslintrc.dev.js';
+var postcssConfigDir = './webpack-config/postcss.config.js';
+var resolveConfigDir = './webpack-config/resolve.config.js';
 
-//目录配置
-var baseEntryDir = './static_guojiang_tv/src/mobile/v2/'
-var entryDir = baseEntryDir + '**/*.js'
-var outDir = path.resolve(__dirname, './static_guojiang_tv/mobile/v2')
-var outPublicDir = 'http://static.guojiang.tv/mobile/v2/'
-var basePageEntry = './html/mobile/'
-var browserSyncBaseDir = './html/mobile/dist'
-//clean folder
-var cleanFolder = [
-					path.resolve(__dirname, './html/mobile/dist'), 
-					path.resolve(__dirname, './static_guojiang_tv/mobile/v2/css'), 
-					path.resolve(__dirname, './static_guojiang_tv/mobile/v2/js')
-				]
+if(isPc){
+	//pc版目录配置
+	console.log('***********************PC编译*************************');
+	
+	var baseEntryDir = './static_guojiang_tv/src/pc/v4/';
+	var entryDir = baseEntryDir + '**/*.js';
+	var outDir = path.resolve(__dirname, './static_guojiang_tv/pc/v4');
+	var outPublicDir = 'http://static.guojiang.tv/pc/v4/';
+	var basePageDir = 'html/pc';
+	var basePageEntry = './'+basePageDir+'/';
+	var browserSyncBaseDir = './'+basePageDir+'/dist';
+	//clean folder
+	var cleanFolder = [
+		path.resolve(__dirname, './html/pc/dist'), 
+		path.resolve(__dirname, './static_guojiang_tv/pc/v4/css'), 
+		path.resolve(__dirname, './static_guojiang_tv/pc/v4/js')
+	];
+
+	var dll_manifest_name = 'dll_manifest_pc';
+}else{
+	//触屏版目录配置
+	console.log('***********************触屏版编译*************************');
+
+	var baseEntryDir = './static_guojiang_tv/src/mobile/v2/';
+	var entryDir = baseEntryDir + '**/*.js';
+	var outDir = path.resolve(__dirname, './static_guojiang_tv/mobile/v2');
+	var outPublicDir = 'http://static.guojiang.tv/mobile/v2/';
+	var basePageDir = 'html/mobile';
+	var basePageEntry = './'+basePageDir+'/';
+	var browserSyncBaseDir = './'+basePageDir+'/dist';
+	//clean folder
+	var cleanFolder = [
+		path.resolve(__dirname, './html/mobile/dist'), 
+		path.resolve(__dirname, './static_guojiang_tv/mobile/v2/css'), 
+		path.resolve(__dirname, './static_guojiang_tv/mobile/v2/js')
+	];
+
+	var dll_manifest_name = 'dll_manifest';
+}
+
 
 //入口js文件配置以及公共模块配置
-var entries = getEntry(entryDir) 
-entries.vendors = ['common','wxShare']
+var entries = getEntry(entryDir); 
+if(isPc){
+	entries.vendors = ['common'];	
+}else{
+	entries.vendors = ['common','wxShare'];
+}
 
-console.log(entries)
+console.log(entries);
 
 module.exports = {
     /* 输入文件 */
@@ -91,10 +123,10 @@ module.exports = {
 				options: {
 					limit: 5120,
 					name: function(p){
-						let tem_path = p.split(/\\img\\/)[1]
-						tem_path = tem_path.replace(/\\/g,'/')
+						let tem_path = p.split(/\\img\\/)[1];
+						tem_path = tem_path.replace(/\\/g,'/');
 
-						return 'img/'+tem_path + '?v=[hash:8]'
+						return 'img/'+tem_path + '?v=[hash:8]';
 					}
 				}
 			},
@@ -113,8 +145,8 @@ module.exports = {
 		new HashedChunkIdsPlugin(),
 		new webpack.HashedModuleIdsPlugin(),
 		new webpack.DllReferencePlugin({
-		  context: __dirname, // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
-		  manifest: require('./manifest.json'), // 指定manifest.json
+			context: __dirname, // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
+		  manifest: require('./'+ dll_manifest_name +'.json'), // 指定manifest.json
 		  name: 'dll_library',  // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
 		}),
 		new BrowserSyncPlugin({
@@ -141,16 +173,16 @@ module.exports = {
 		}),
 		new CopyWebpackPlugin([
             { from: baseEntryDir + 'js/lib', to: 'js/lib' },
-        ])
+		])
 	]
-}
+};
 
 
 
 
 /***** 生成组合后的html *****/
 
-var pages = getEntry(basePageEntry + 'src/**/*.ejs')
+var pages = getEntry(basePageEntry + 'src/**/*.ejs');
 for (var pathname in pages) {
 
 	var conf = {
@@ -162,14 +194,14 @@ for (var pathname in pages) {
 			removeComments: true,
 			collapseWhitespace: false
 		}
-	}
+	};
 	if (pathname in module.exports.entry) {
-		conf.chunks = [pathname, 'vendors']
+		conf.chunks = [pathname, 'vendors'];
 	}else{
-		conf.chunks = ['vendors']
+		conf.chunks = ['vendors'];
 	}	
 
-	module.exports.plugins.push(new htmlWebpackPlugin(conf))
+	module.exports.plugins.push(new htmlWebpackPlugin(conf));
 }
 
 
@@ -178,7 +210,7 @@ for (var pathname in pages) {
 /***** 获取文件列表(仅支持js和ejs文件)：输出正确的js和html路径 *****/
 
 function getEntry(globPath) {
-	var entries = {}, basename
+	var entries = {}, basename;
 
 	glob.sync(globPath).forEach(function (entry) {
 
@@ -186,16 +218,16 @@ function getEntry(globPath) {
 		if(entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('component') == -1){
 
 			//判断是js文件还是ejs模板文件
-			let isJsFile = entry.indexOf('.js') !== -1
+			let isJsFile = entry.indexOf('.js') !== -1;
 			let dirArr = isJsFile ? 
 						entry.split('/js/')[1].split('.js')[0].split('/') :
-						entry.split('html/mobile/src/')[1].split('.ejs')[0].split('/')
+						entry.split(basePageDir+'/src/')[1].split('.ejs')[0].split('/');
 			
-			basename = dirArr.join('/')
-			entries[basename] = entry
+			basename = dirArr.join('/');
+			entries[basename] = entry;
 		}
-	})
-	return entries
+	});
+	return entries;
 }
 
 
@@ -204,7 +236,7 @@ function getEntry(globPath) {
 /***** 区分开发环境和生产环境 *****/
 
 if (prod) {
-	console.log('当前编译环境：production')
+	console.log('当前编译环境：production');
 
 	//module.exports.devtool = 'module-cheap-source-map'
 	module.exports.plugins = module.exports.plugins.concat([
@@ -230,9 +262,9 @@ if (prod) {
 				comments: false, // 去掉注释内容
 			}
 		})
-	])
+	]);
 } else {  
-	console.log('当前编译环境：dev')
+	console.log('当前编译环境：dev');
 
-	module.exports.devtool = 'cheap-module-source-map'
+	module.exports.devtool = 'cheap-module-source-map';
 }

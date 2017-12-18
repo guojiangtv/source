@@ -4,12 +4,17 @@
   "description": "vue2.0 + webpack2.x",
   "main": "webpack.config.js",
   "scripts": {
-    "watch": "webpack --watch",
+    "watch": "webpack --progress --watch",
     "build": "webpack --hide-modules",
     "deploy": "set NODE_ENV=production&&webpack --progress --colors --hide-modules",
-    "browser": "browser-sync start --server --files '**/*.*'",
     "dll": "set NODE_ENV=production&&webpack --progress --colors --config ./webpack-dll.config.js",
-    "dll-dev": "webpack --progress --colors --config ./webpack-dll.config.js"
+    "dll-dev": "webpack --progress --colors --config ./webpack-dll.config.js",
+    "pc_watch": "set PLATFORM=pc&&webpack --progress --watch",
+    "pc_build": "set PLATFORM=pc&&webpack --hide-modules",
+    "pc_deploy": "set PLATFORM=pc&&set NODE_ENV=production&&webpack --progress --colors --hide-modules",
+    "pc_dll": "set PLATFORM=pc&&set NODE_ENV=production&&webpack --progress --colors --config ./webpack-dll.config.js",
+    "pc_dll-dev": "set PLATFORM=pc&&webpack --progress --colors --config ./webpack-dll.config.js",
+    "browser": "browser-sync start --server --files '**/*.*'"
   },
   "keywords": [],
   "author": "smy",
@@ -56,7 +61,12 @@
     "weixin-js-sdk": "^1.2.0"
   },
   "dependencies": {
-    "babel-polyfill": "^6.23.0"
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-runtime": "^6.26.0",
+    "promise-polyfill": "^6.1.0",
+    "jquery": "^3.2.1"
   },
   "browserslist": [
     "> 0.2%",

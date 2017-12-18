@@ -17,11 +17,11 @@ module.exports = {
             "off"
         ],
         "quotes": [
-             2, "always"
+            "error",
+            "single"
         ],
         "semi": [
-            "error",
-            "never"
+            2, "always"
         ]
     }
 };
