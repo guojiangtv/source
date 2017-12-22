@@ -3,3 +3,8 @@ html/
 static_guojiang_tv/
 trunk/
 beta/
+nginx-1.12.0/contrib/
+nginx-1.12.0/docs/
+nginx-1.12.0/html/
+nginx-1.12.0/logs/
+nginx-1.12.0/temp/
