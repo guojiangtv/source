@@ -20,6 +20,12 @@ var eslintConfigDir = prod ? './webpack-config/.eslintrc.js' : './webpack-config
 var postcssConfigDir = './webpack-config/postcss.config.js';
 var resolveConfigDir = './webpack-config/resolve.config.js';
 
+//忽略不必要编译的文件
+var entryIgnore = require('./entryignore.json');
+
+console.log('******************************************************');
+console.log('entryignore:', entryIgnore);
+
 if(isPc){
 	//pc版目录配置
 	console.log('***********************PC编译*************************');
@@ -68,8 +74,6 @@ if(isPc){
 }else{
 	entries.vendors = ['common','wxShare'];
 }
-
-console.log(entries);
 
 module.exports = {
     /* 输入文件 */
@@ -224,12 +228,18 @@ function getEntry(globPath) {
 						entry.split(basePageDir+'/src/')[1].split('.ejs')[0].split('/');
 			
 			basename = dirArr.join('/');
-			entries[basename] = entry;
+
+			if(entryIgnore.indexOf(basename) == -1){
+				entries[basename] = entry;
+			}
+
 		}
 	});
+
+	console.log(entries);
+	
 	return entries;
 }
-
 
 
 
@@ -240,7 +250,7 @@ if (prod) {
 
 	//module.exports.devtool = 'module-cheap-source-map'
 	module.exports.plugins = module.exports.plugins.concat([
-		new CleanWebpackPlugin( cleanFolder ),
+		//new CleanWebpackPlugin( cleanFolder ),
     	//压缩css代码
 		new OptimizeCssAssetsPlugin({
 			assetNameRegExp: /\.css\.*(?!.*map)/g,  //注意不要写成 /\.css$/g
