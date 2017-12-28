@@ -62,6 +62,9 @@ if(isPc){
 		path.resolve(__dirname, './static_guojiang_tv/mobile/v2/css'), 
 		path.resolve(__dirname, './static_guojiang_tv/mobile/v2/js')
 	];
+	var cleanMaps = [
+		path.resolve(__dirname, './static_guojiang_tv/mobile/v2/js/**/*.map')
+	]
 
 	var dll_manifest_name = 'dll_manifest';
 }
@@ -250,7 +253,7 @@ if (prod) {
 
 	//module.exports.devtool = 'module-cheap-source-map'
 	module.exports.plugins = module.exports.plugins.concat([
-		//new CleanWebpackPlugin( cleanFolder ),
+		new CleanWebpackPlugin( cleanMaps ),
     	//压缩css代码
 		new OptimizeCssAssetsPlugin({
 			assetNameRegExp: /\.css\.*(?!.*map)/g,  //注意不要写成 /\.css$/g
