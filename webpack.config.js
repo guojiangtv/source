@@ -43,6 +43,9 @@ if(isPc){
 		path.resolve(__dirname, './static_guojiang_tv/pc/v4/css'), 
 		path.resolve(__dirname, './static_guojiang_tv/pc/v4/js')
 	];
+	var cleanMaps = [
+		path.resolve(__dirname, './static_guojiang_tv/pc/v4/js/**/*.map')
+	]
 
 	var dll_manifest_name = 'dll_manifest_pc';
 }else{
