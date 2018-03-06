@@ -16,8 +16,10 @@ module.exports = {
 		'rsa': path.resolve(__dirname, baseEntryDir + 'js/lib/rsa.js'),
 		'common': path.resolve(__dirname, baseEntryDir + 'js/common/common.js'),
 		'wxShare': path.resolve(__dirname, baseEntryDir + 'js/common/wxShare.js'),
+		'guide': path.resolve(__dirname, baseEntryDir + 'js/common/guide.js'),
 		'user': path.resolve(__dirname, pcBaseEntryDir + 'js/common/user.js'),
-		'component': path.resolve(__dirname, pcBaseEntryDir + 'js/common/gj.component.js')
+		'component': path.resolve(__dirname, pcBaseEntryDir + 'js/common/gj.component.js'),
+		'dll': path.resolve(__dirname, '../static_guojiang_tv/src/mobile/v2/js/lib/dll.js')
 	},
 
   // 当require的模块找不到时，尝试添加这些后缀后进行寻找

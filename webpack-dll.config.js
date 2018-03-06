@@ -17,19 +17,19 @@ var resolveConfigDir = './webpack-config/resolve.config.js';
 
 if(isPc){
 	//PC目录配置
-	var baseEntryDir = './static_guojiang_tv/src/pc/v4/';
+	var baseEntryDir = './static_guojiang_tv/pc/v4/';
 	var entryDir = baseEntryDir + '**/*.js';
-	var outDir = path.resolve(__dirname, './static_guojiang_tv/src/pc/v4');
+	var outDir = path.resolve(__dirname, './static_guojiang_tv/pc/v4');
 	var outPublicDir = 'http://static.guojiang.tv/pc/v4/';	
 
 	var entries = ['vue','axios','layer','jquery'];
 
-	var dll_manifest_name = 'dll_manifest_pc';
+	var dll_manifest_name = 'dll_pc_manifest';
 }else{
 	//触屏目录配置
-	var baseEntryDir = './static_guojiang_tv/src/mobile/v2/';
+	var baseEntryDir = './static_guojiang_tv/mobile/v2/';
 	var entryDir = baseEntryDir + '**/*.js';
-	var outDir = path.resolve(__dirname, './static_guojiang_tv/src/mobile/v2');
+	var outDir = path.resolve(__dirname, './static_guojiang_tv/mobile/v2');
 	var outPublicDir = 'http://static.guojiang.tv/mobile/v2/';
 
 	var entries = ['vue','axios','layer','weixin-js-sdk','webpack-zepto'];
@@ -47,7 +47,7 @@ module.exports = {
 	output: {
 		path: outDir,
 		publicPath: outPublicDir,
-		filename: 'js/lib/[name].js?v=[chunkhash:8]',
+		filename: 'js/lib/[name].[chunkhash:8].js',
 		library: '[name]_library',
 		/*libraryTarget: 'umd'*/
 	},
@@ -76,7 +76,7 @@ module.exports = {
 			},
 			{
 				test: /\.js$/,
-				loader: 'babel-loader',
+				loader: 'babel-loader?cacheDirectory=true',
         		exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
 			},
 			{   
@@ -116,11 +116,11 @@ module.exports = {
 		new HashedChunkIdsPlugin(),
 		new webpack.HashedModuleIdsPlugin(),
 		new webpack.DllPlugin({
-	      path: dll_manifest_name + '.json', // 本Dll文件中各模块的索引，供DllReferencePlugin读取使用
+	      path: './manifest/' + dll_manifest_name + '.json', // 本Dll文件中各模块的索引，供DllReferencePlugin读取使用
 	      name: '[name]_library',  // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与参数output.library保持一致
 	      context: __dirname, // 指定一个路径作为上下文环境，需要与DllReferencePlugin的context参数保持一致，建议统一设置为项目根目录
 	    }),
-		new ExtractTextPlugin('css/[name].css?v=[contenthash:8]'),
+		new ExtractTextPlugin('css/[name].[contenthash:8].css'),
     
 		new webpack.LoaderOptionsPlugin({
 			options: {

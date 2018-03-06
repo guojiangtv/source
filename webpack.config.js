@@ -1,6 +1,10 @@
 // 引入操作路径模块和webpack 
 var path = require('path');
 var webpack = require('webpack');
+
+const fs = require('fs');
+const crypto = require('crypto');
+
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin'); //抽离css
 var htmlWebpackPlugin = require('html-webpack-plugin');
@@ -9,6 +13,11 @@ var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var HashedChunkIdsPlugin = require('./webpack-config/hashedChunkIdsPlugin.js');
+const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
+
+const HappyPack = require('happypack');
+const os = require('os');
+const HappyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length});
 
 //生产与开发环境配置
 var glob = require('glob');
@@ -23,8 +32,7 @@ var resolveConfigDir = './webpack-config/resolve.config.js';
 //忽略不必要编译的文件
 var entryIgnore = require('./entryignore.json');
 
-console.log('******************************************************');
-console.log('entryignore:', entryIgnore);
+//console.log('entryignore:', entryIgnore);
 
 if(isPc){
 	//pc版目录配置
@@ -47,7 +55,8 @@ if(isPc){
 		path.resolve(__dirname, './static_guojiang_tv/pc/v4/js/**/*.map')
 	]
 
-	var dll_manifest_name = 'dll_manifest_pc';
+	var dll_manifest_name = 'dll_pc';
+	var vendor_manifest_name = 'vendor_pc';
 }else{
 	//触屏版目录配置
 	console.log('***********************触屏版编译*************************');
@@ -69,26 +78,25 @@ if(isPc){
 		path.resolve(__dirname, './static_guojiang_tv/mobile/v2/js/**/*.map')
 	]
 
-	var dll_manifest_name = 'dll_manifest';
+	var dll_manifest_name = 'dll';
+	var vendor_manifest_name = 'vendor';
 }
 
 
 //入口js文件配置以及公共模块配置
 var entries = getEntry(entryDir); 
-if(isPc){
-	entries.vendors = ['common'];	
-}else{
-	entries.vendors = ['common','wxShare'];
-}
+entries.manifest = ['guide'];
 
 module.exports = {
+	cache: true,
     /* 输入文件 */
 	resolve: require( resolveConfigDir ),
 	entry: entries,
 	output: {
 		path: outDir,
 		publicPath: outPublicDir,
-		filename: 'js/[name].js?v=[chunkhash:8]'
+		filename: 'js/[name].[chunkhash:8].js',
+		chunkFilename: 'js/[name]-chunk.[chunkhash:8].js'
 	},
 	module: {
 		rules: [
@@ -101,21 +109,24 @@ module.exports = {
 			},
 			{
 				test: /\.ejs$/,
-				loader: 'ejs-loader'
+				/*loader: 'ejs-loader'*/
+				use: 'happypack/loader?id=ejs'
 			},
 			{
 				test: /\.js$/,
 				enforce: 'pre',
-				loader: 'eslint-loader',
 				include: path.resolve(__dirname, entryDir),
 				exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
-				options: {
+				use: 'happypack/loader?id=js',
+				//loader: 'eslint-loader',
+				/*options: {
 					fix: true
-				}
+				}*/
 			},
 			{
 				test: /\.js$/,
-				loader: 'babel-loader',
+				use: 'happypack/loader?id=babel',
+				//loader: 'babel-loader?cacheDirectory=true',
         		exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
 			},
 			{   
@@ -152,21 +163,46 @@ module.exports = {
 		]
 	},
 	plugins: [
-		new HashedChunkIdsPlugin(),
+		new HappyPack({
+			id: 'ejs',
+			threadPool: HappyThreadPool,
+			loaders: ['ejs-loader']
+		}),
+		new HappyPack({
+			id: 'js',
+			threadPool: HappyThreadPool,
+			loaders: [{
+				loader: 'eslint-loader',
+				options: {
+					fix: true
+				}
+			}]
+		}),
+		new HappyPack({
+			id: 'babel',
+			threadPool: HappyThreadPool,
+			loaders: ['babel-loader?cacheDirectory=true']
+		}),
+		new ExtractTextPlugin('css/[name].[contenthash:8].css'),
 		new webpack.HashedModuleIdsPlugin(),
+		new HashedChunkIdsPlugin(),
 		new webpack.DllReferencePlugin({
-			context: __dirname, // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
-		  manifest: require('./'+ dll_manifest_name +'.json'), // 指定manifest.json
-		  name: 'dll_library',  // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
+		  // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
+		  context: __dirname, 
+		  manifest: require('./manifest/'+ dll_manifest_name +'_manifest.json'),
+		  // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
+		  name: 'dll_library',
+		}),
+		new webpack.DllReferencePlugin({
+		  context: __dirname,
+		  manifest: require('./manifest/'+ vendor_manifest_name +'_manifest.json'),
+		  name: 'vendor_library', 
 		}),
 		new BrowserSyncPlugin({
 			host: 'm.tuho.tv',
 			port: 3000,
 			server: { baseDir: [browserSyncBaseDir] }
 		}),
-
-		new ExtractTextPlugin('css/[name].css?v=[contenthash:8]'),
-    
 		new webpack.LoaderOptionsPlugin({
 			options: {
 				eslint: require( eslintConfigDir ),
@@ -176,18 +212,45 @@ module.exports = {
 
     	// 提取公共模块
 		new webpack.optimize.CommonsChunkPlugin({
-			names:  ['vendors', 'manifest'], // 公共模块的名称
+			names:  ['manifest'], // 公共模块的名称
       		//filename: 'js/vendors-[hash:6].js', // 公共模块的名称
-			chunks: 'vendors',  // chunks是需要提取的模块
+			chunks: 'manifest',  // chunks是需要提取的模块
 			minChunks: Infinity  //公共模块最小被引用的次数
 		}),
-		new CopyWebpackPlugin([
+		/*new CopyWebpackPlugin([
             { from: baseEntryDir + 'js/lib', to: 'js/lib' },
-		])
+		]),*/
+		new HtmlWebpackIncludeAssetsPlugin({
+			assets: [getLatestFile('js/lib/dll.js')],
+			append: false
+		}),
+		new HtmlWebpackIncludeAssetsPlugin({
+			assets: [getLatestFile('js/vendor.js')],
+			append: false
+		}),
+		new HtmlWebpackIncludeAssetsPlugin({
+			assets: [getLatestFile('css/vendor.css')],
+			append: false
+		})
 	]
 };
 
+function getLatestFile(path){
+	let new_path = path.replace(/\./g, '.**.');
+	let latest_file = '';
+	let latest_file_mtime = 0;
 
+	glob.sync(outDir + '/' + new_path).forEach(function(file){
+		let fileInfo = fs.statSync(file);
+		let file_mtime = +new Date(fileInfo.mtime);
+
+		latest_file = file_mtime > latest_file_mtime ? file : latest_file;
+		latest_file_mtime = file_mtime > latest_file_mtime ? file_mtime : latest_file_mtime;
+
+	})
+
+	return latest_file.replace(/^.*\/(js\/|css\/)/ig, "$1");
+}
 
 
 /***** 生成组合后的html *****/
@@ -200,15 +263,16 @@ for (var pathname in pages) {
 		template: path.resolve(__dirname, basePageEntry + 'src/'+ pathname + '.js'),
 		inject: true, 
 		cache: true, //只改动变动的文件
+		//hash: true,
 		minify: {
 			removeComments: true,
 			collapseWhitespace: false
 		}
 	};
 	if (pathname in module.exports.entry) {
-		conf.chunks = [pathname, 'vendors'];
+		conf.chunks = [pathname, 'manifest'];
 	}else{
-		conf.chunks = ['vendors'];
+		conf.chunks = ['manifest'];
 	}	
 
 	module.exports.plugins.push(new htmlWebpackPlugin(conf));
@@ -242,12 +306,13 @@ function getEntry(globPath) {
 		}
 	});
 
-	console.log(entries);
+	//console.log(entries);
 	
 	return entries;
 }
 
 
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 /***** 区分开发环境和生产环境 *****/
 
@@ -269,15 +334,21 @@ if (prod) {
 			canPrint: true
 		}),
  		//压缩JS代码
-		new webpack.optimize.UglifyJsPlugin({
-			compress: {
-				warnings: false
-			},
-			//sourceMap: true,
-			output: {
-				comments: false, // 去掉注释内容
-			}
-		})
+		new UglifyJsPlugin({
+			cache: true,
+			parallel: true,
+		    uglifyOptions: {
+		      ie8: false,
+		      ecma: 8,
+		      output: {
+		        comments: false,
+		        beautify: false,
+		      },
+		      compress: true,
+		      warnings: false
+		    }
+		  })
+
 	]);
 } else {  
 	console.log('当前编译环境：dev');
