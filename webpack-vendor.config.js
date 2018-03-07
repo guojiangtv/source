@@ -51,7 +51,7 @@ module.exports = {
 	output: {
 		path: outDir,
 		publicPath: outPublicDir,
-		filename: 'js/[name].[chunkhash:8].js',
+		filename: 'js/lib/[name].[chunkhash:8].js',
 		library: '[name]_library',
 		/*libraryTarget: 'umd'*/
 	},
@@ -129,7 +129,7 @@ module.exports = {
 		  manifest: require('./manifest/'+ dll_manifest_name + '_manifest.json'), // 指定manifest.json
 		  name: 'dll_library',  // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
 		}),
-		new ExtractTextPlugin('css/[name].[contenthash:8].css'),
+		new ExtractTextPlugin('css/lib/[name].[contenthash:8].css'),
     
 		new webpack.LoaderOptionsPlugin({
 			options: {

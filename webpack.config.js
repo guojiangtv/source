@@ -47,13 +47,16 @@ if(isPc){
 	var browserSyncBaseDir = './'+basePageDir+'/dist';
 	//clean folder
 	var cleanFolder = [
-		path.resolve(__dirname, './html/pc/dist'), 
-		path.resolve(__dirname, './static_guojiang_tv/pc/v4/css'), 
-		path.resolve(__dirname, './static_guojiang_tv/pc/v4/js')
+		//path.resolve(__dirname, './html/pc/dist'), 
+		'js',
+		'css'
 	];
-	var cleanMaps = [
-		path.resolve(__dirname, './static_guojiang_tv/pc/v4/js/**/*.map')
-	]
+	var cleanOptions = {
+		root: path.resolve(__dirname, './static_guojiang_tv/pc/v4'),
+		exclude: [
+			'lib'
+		]
+	}
 
 	var dll_manifest_name = 'dll_pc';
 	var vendor_manifest_name = 'vendor_pc';
@@ -70,13 +73,16 @@ if(isPc){
 	var browserSyncBaseDir = './'+basePageDir+'/dist';
 	//clean folder
 	var cleanFolder = [
-		path.resolve(__dirname, './html/mobile/dist'), 
-		path.resolve(__dirname, './static_guojiang_tv/mobile/v2/css'), 
-		path.resolve(__dirname, './static_guojiang_tv/mobile/v2/js')
+		//path.resolve(__dirname, './html/mobile/dist'), 
+		'js',
+		'css'
 	];
-	var cleanMaps = [
-		path.resolve(__dirname, './static_guojiang_tv/mobile/v2/js/**/*.map')
-	]
+	var cleanOptions = {
+		root: path.resolve(__dirname, './static_guojiang_tv/mobile/v2'),
+		exclude: [
+			'lib'
+		]
+	}
 
 	var dll_manifest_name = 'dll';
 	var vendor_manifest_name = 'vendor';
@@ -225,11 +231,11 @@ module.exports = {
 			append: false
 		}),
 		new HtmlWebpackIncludeAssetsPlugin({
-			assets: [getLatestFile('js/vendor.js')],
+			assets: [getLatestFile('js/lib/vendor.js')],
 			append: false
 		}),
 		new HtmlWebpackIncludeAssetsPlugin({
-			assets: [getLatestFile('css/vendor.css')],
+			assets: [getLatestFile('css/lib/vendor.css')],
 			append: false
 		})
 	]
@@ -321,7 +327,7 @@ if (prod) {
 
 	//module.exports.devtool = 'module-cheap-source-map'
 	module.exports.plugins = module.exports.plugins.concat([
-		new CleanWebpackPlugin( cleanMaps ),
+		new CleanWebpackPlugin(cleanFolder, cleanOptions ),
     	//压缩css代码
 		new OptimizeCssAssetsPlugin({
 			assetNameRegExp: /\.css\.*(?!.*map)/g,  //注意不要写成 /\.css$/g
