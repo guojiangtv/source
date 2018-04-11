@@ -345,7 +345,6 @@ if (prod) {
 			parallel: true,
 		    uglifyOptions: {
 		      ie8: false,
-		      ecma: 8,
 		      output: {
 		        comments: false,
 		        beautify: false,
