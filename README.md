@@ -7,6 +7,14 @@ npm：3.10.10
 
 node: 6.10.3 LTS稳定版
 
+## 2018-05-10
+修复cssnano不兼容ios8等问题
+
+cssnano通过移除注释、空白、重复规则、过时的浏览器前缀以及做出其他的优化来工作，一般能减少至少 50% 的大小。
+cssnano 集成了autoprefixer的功能。会使用到autoprefixer进行无关前缀的清理。默认不兼容ios8等，会去掉部分webkit前缀，比如flex
+所以这里选择关闭cssnano的autoprefixer，使用postcss的autoprefixer功能
+
+
 ## 2018-04-27
 1. 增加编译忽略文件
 
